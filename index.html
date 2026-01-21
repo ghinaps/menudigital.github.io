@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NgopiKuy - Menu Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="light">
+    <header class="topbar">
+      <div class="brand">☕ NgopiKuy</div>
+      <div class="actions">
+        <button id="themeToggle">🌙</button>
+        <button id="menuToggle">☰</button>
+      </div>
+    </header>
+
+    <nav class="category-menu" id="categoryMenu">
+      <button onclick="filterMenu('all')">Semua</button>
+      <button onclick="filterMenu('coffee')">Coffee</button>
+      <button onclick="filterMenu('noncoffee')">Non Coffee</button>
+      <button onclick="filterMenu('snack')">Snack</button>
+      <button onclick="filterMenu('food')">Makanan</button>
+    </nav>
+
+    <main class="menu-container">
+      <!-- COFFEE -->
+      <div class="menu-card coffee" data-price="25000">
+        <img src="images/latte.jpg" alt="Coffee Latte" />
+        <div class="menu-info">
+          <h3>Coffee Latte</h3>
+          <span class="price">Rp 25.000</span>
+
+          <button class="toggle-btn">☰ Pilih Varian</button>
+          <div class="variant">
+            <label
+              ><input type="radio" name="latte" value="Original" />
+              Original</label
+            >
+            <label
+              ><input type="radio" name="latte" value="Vanilla" />
+              Vanilla</label
+            >
+            <label
+              ><input type="radio" name="latte" value="Caramel" />
+              Caramel</label
+            >
+          </div>
+
+          <div class="qty-wrapper">
+            <button onclick="changeQty(this, -1)">−</button>
+            <span class="qty">1</span>
+            <button onclick="changeQty(this, 1)">+</button>
+          </div>
+
+          <div class="total">Total: <span>Rp 25.000</span></div>
+
+          <button
+            class="order-btn"
+            onclick="orderWA(this, 'Coffee Latte', 'latte')"
+          >
+            Pesan via WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- NON COFFEE -->
+      <div class="menu-card noncoffee" data-price="27000">
+        <img src="images/matcha.jpg" alt="Matcha Latte" />
+        <div class="menu-info">
+          <h3>Matcha Latte</h3>
+          <span class="price">Rp 27.000</span>
+
+          <button class="toggle-btn">☰ Pilih Varian</button>
+          <div class="variant">
+            <label
+              ><input type="radio" name="matcha" value="Original" />
+              Original</label
+            >
+            <label
+              ><input type="radio" name="matcha" value="Less Sugar" /> Less
+              Sugar</label
+            >
+          </div>
+
+          <div class="qty-wrapper">
+            <button onclick="changeQty(this, -1)">−</button>
+            <span class="qty">1</span>
+            <button onclick="changeQty(this, 1)">+</button>
+          </div>
+
+          <div class="total">Total: <span>Rp 27.000</span></div>
+
+          <button
+            class="order-btn"
+            onclick="orderWA(this, 'Matcha Latte', 'matcha')"
+          >
+            Pesan via WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- SNACK -->
+      <div class="menu-card snack" data-price="18000">
+        <img src="images/snack.jpg" alt="French Fries" />
+        <div class="menu-info">
+          <h3>French Fries</h3>
+          <span class="price">Rp 18.000</span>
+
+          <div class="qty-wrapper">
+            <button onclick="changeQty(this, -1)">−</button>
+            <span class="qty">1</span>
+            <button onclick="changeQty(this, 1)">+</button>
+          </div>
+
+          <div class="total">Total: <span>Rp 18.000</span></div>
+
+          <button class="order-btn" onclick="orderWA(this, 'French Fries', '')">
+            Pesan via WhatsApp
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // VARIAN TOGGLE
+      document.querySelectorAll(".toggle-btn").forEach((btn) => {
+        btn.onclick = () => btn.nextElementSibling.classList.toggle("show");
+      });
+
+      // QTY & TOTAL
+      function changeQty(btn, val) {
+        const card = btn.closest(".menu-card");
+        const qtyEl = card.querySelector(".qty");
+        let qty = Math.max(1, parseInt(qtyEl.textContent) + val);
+        qtyEl.textContent = qty;
+
+        const price = parseInt(card.dataset.price);
+        card.querySelector(".total span").textContent =
+          "Rp " + (price * qty).toLocaleString("id-ID");
+      }
+
+      // ORDER WA
+      function orderWA(btn, menu, group) {
+        const card = btn.closest(".menu-card");
+        const qty = card.querySelector(".qty").textContent;
+        const total = card.querySelector(".total span").textContent;
+
+        let variant = "-";
+        if (group) {
+          const v = card.querySelector(`input[name="${group}"]:checked`);
+          if (!v) {
+            alert("Pilih varian terlebih dahulu");
+            return;
+          }
+          variant = v.value;
+        }
+
+        const msg = `Halo, saya ingin memesan:
+Menu: ${menu}
+Varian: ${variant}
+Jumlah: ${qty}
+${total}
+
+Terima kasih`;
+
+        window.open(
+          `https://wa.me/6281318229451?text=${encodeURIComponent(msg)}`,
+          "_blank",
+        );
+      }
+
+      // CATEGORY
+      const menuToggle = document.getElementById("menuToggle");
+      const catMenu = document.getElementById("categoryMenu");
+      menuToggle.onclick = () => catMenu.classList.toggle("show");
+
+      function filterMenu(cat) {
+        document.querySelectorAll(".menu-card").forEach((c) => {
+          c.style.display =
+            cat === "all" || c.classList.contains(cat) ? "block" : "none";
+        });
+        catMenu.classList.remove("show");
+      }
+
+      // THEME
+      const theme = document.getElementById("themeToggle");
+      theme.onclick = () => {
+        document.body.classList.toggle("dark");
+        theme.textContent = document.body.classList.contains("dark")
+          ? "☀️"
+          : "🌙";
+      };
+    </script>
+  </body>
+</html>
